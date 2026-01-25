@@ -37,7 +37,8 @@ class Rule:
     event: str  # "bash", "file", "stop", "all", etc.
     pattern: Optional[str] = None  # Simple pattern (legacy)
     conditions: List[Condition] = field(default_factory=list)
-    action: str = "warn"  # "warn" or "block" (future)
+    action: str = "warn"  # "warn" or "block"
+    hook: Optional[str] = None  # "pre", "post", or None (both)
     tool_matcher: Optional[str] = None  # Override tool matching
     message: str = ""  # Message body from markdown
 
@@ -72,6 +73,13 @@ class Rule:
                 pattern=simple_pattern
             )]
 
+        # Parse hook field (pre/post) - normalize to lowercase
+        hook_value = frontmatter.get('hook')
+        if hook_value:
+            hook_value = hook_value.lower()
+            if hook_value not in ('pre', 'post'):
+                hook_value = None  # Invalid value, treat as both
+
         return cls(
             name=frontmatter.get('name', 'unnamed'),
             enabled=frontmatter.get('enabled', True),
@@ -79,6 +87,7 @@ class Rule:
             pattern=simple_pattern,
             conditions=conditions,
             action=frontmatter.get('action', 'warn'),
+            hook=hook_value,
             tool_matcher=frontmatter.get('tool_matcher'),
             message=message.strip()
         )

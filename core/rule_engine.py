@@ -115,6 +115,14 @@ class RuleEngine:
         Returns:
             True if rule matches, False otherwise
         """
+        # Check hook phase filter (pre/post)
+        if rule.hook:
+            hook_event = input_data.get('hook_event_name', '')
+            if rule.hook == 'pre' and hook_event != 'PreToolUse':
+                return False
+            if rule.hook == 'post' and hook_event != 'PostToolUse':
+                return False
+
         # Extract tool information
         tool_name = input_data.get('tool_name', '')
         tool_input = input_data.get('tool_input', {})

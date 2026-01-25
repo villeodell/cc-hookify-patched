@@ -94,6 +94,11 @@ This command could delete important files. Please:
 - `warn`: Shows warning but allows operation (default)
 - `block`: Prevents operation from executing (PreToolUse) or stops session (Stop events)
 
+**Hook field (optional):**
+- `pre`: Only trigger on PreToolUse (before execution)
+- `post`: Only trigger on PostToolUse (after execution)
+- Omit to trigger on both phases
+
 ### Advanced Rule (Multiple Conditions)
 
 `.claude/hookify.sensitive-files.local.md`:
