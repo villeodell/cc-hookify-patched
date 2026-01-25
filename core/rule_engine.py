@@ -32,6 +32,31 @@ class RuleEngine:
         # No need for instance cache anymore - using global lru_cache
         pass
 
+    def _build_response(self, message: str, hook_event: str, block: bool = False) -> Dict[str, Any]:
+        """Build hook response with systemMessage and additionalContext.
+
+        Ensures Claude can see hook messages via additionalContext, not just
+        the user via systemMessage.
+
+        Args:
+            message: Message for both user and Claude
+            hook_event: Current hook event name
+            block: Whether to block the operation
+
+        Returns:
+            Response dict with proper structure for Claude Code
+        """
+        response = {
+            "systemMessage": message,
+            "hookSpecificOutput": {
+                "hookEventName": hook_event or "PreToolUse",
+                "additionalContext": message
+            }
+        }
+        if block:
+            response["hookSpecificOutput"]["permissionDecision"] = "deny"
+        return response
+
     def evaluate_rules(self, rules: List[Rule], input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate all rules and return combined results.
 
@@ -64,31 +89,18 @@ class RuleEngine:
 
             # Use appropriate blocking format based on event type
             if hook_event == 'Stop':
-                return {
-                    "decision": "block",
-                    "reason": combined_message,
-                    "systemMessage": combined_message
-                }
-            elif hook_event in ['PreToolUse', 'PostToolUse']:
-                return {
-                    "hookSpecificOutput": {
-                        "hookEventName": hook_event,
-                        "permissionDecision": "deny"
-                    },
-                    "systemMessage": combined_message
-                }
+                response = self._build_response(combined_message, hook_event, block=True)
+                response["decision"] = "block"
+                response["reason"] = combined_message
+                return response
             else:
-                # For other events, just show message
-                return {
-                    "systemMessage": combined_message
-                }
+                return self._build_response(combined_message, hook_event, block=True)
 
         # If only warnings, show them but allow operation
         if warning_rules:
             messages = [f"**[{r.name}]**\n{r.message}" for r in warning_rules]
-            return {
-                "systemMessage": "\n\n".join(messages)
-            }
+            combined_message = "\n\n".join(messages)
+            return self._build_response(combined_message, hook_event)
 
         # No matches - allow operation
         return {}
