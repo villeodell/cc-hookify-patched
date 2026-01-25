@@ -99,6 +99,11 @@ This command could delete important files. Please:
 - `post`: Only trigger on PostToolUse (after execution)
 - Omit to trigger on both phases
 
+**Message handling:**
+- The markdown body is sent to Claude as guidance (via `additionalContext`)
+- Add `message_user` in frontmatter for a separate user-facing alert (via `systemMessage`)
+- If `message_user` is omitted, only Claude sees the message
+
 ### Advanced Rule (Multiple Conditions)
 
 `.claude/hookify.sensitive-files.local.md`:
@@ -191,7 +196,29 @@ Remember to remove debugging statements before committing.
 
 **This rule warns but allows** - Claude sees the message but can still proceed.
 
-### Example 3: Require Tests Before Stopping
+### Example 3: Separate User and Claude Messages
+
+```markdown
+---
+name: git-commit-guidance
+enabled: true
+event: bash
+hook: pre
+pattern: git\s+add
+message_user: "Checking commit readiness..."
+---
+
+Before staging files, verify:
+- Tests pass for changed code
+- Documentation is updated if needed
+- No debug code or credentials in staged files
+
+If any of these are missing, remind the user before they commit.
+```
+
+The user sees a brief alert, while Claude receives detailed guidance on what to check.
+
+### Example 4: Require Tests Before Stopping
 
 ```markdown
 ---

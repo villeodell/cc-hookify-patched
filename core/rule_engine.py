@@ -32,14 +32,35 @@ class RuleEngine:
         # No need for instance cache anymore - using global lru_cache
         pass
 
-    def _build_response(self, message: str, hook_event: str, block: bool = False) -> Dict[str, Any]:
+    def _get_messages(self, rules: List[Rule]) -> tuple[str, str]:
+        """Build user and claude messages from matched rules.
+
+        Claude always sees the body (detailed guidance via additionalContext).
+        User only sees message_user if explicitly specified (via systemMessage).
+
+        Returns:
+            Tuple of (user_message, claude_message)
+        """
+        user_parts = []
+        claude_parts = []
+
+        for rule in rules:
+            prefix = f"**[{rule.name}]**\n"
+            # Claude always sees the body
+            claude_parts.append(prefix + rule.message)
+            # User only sees message_user if explicitly specified
+            if rule.message_user:
+                user_parts.append(prefix + rule.message_user)
+
+        return "\n\n".join(user_parts), "\n\n".join(claude_parts)
+
+    def _build_response(self, user_msg: str, claude_msg: str, hook_event: str,
+                        block: bool = False) -> Dict[str, Any]:
         """Build hook response with systemMessage and additionalContext.
 
-        Ensures Claude can see hook messages via additionalContext, not just
-        the user via systemMessage.
-
         Args:
-            message: Message for both user and Claude
+            user_msg: Message for user (systemMessage)
+            claude_msg: Message for Claude (additionalContext)
             hook_event: Current hook event name
             block: Whether to block the operation
 
@@ -47,10 +68,10 @@ class RuleEngine:
             Response dict with proper structure for Claude Code
         """
         response = {
-            "systemMessage": message,
+            "systemMessage": user_msg,
             "hookSpecificOutput": {
                 "hookEventName": hook_event or "PreToolUse",
-                "additionalContext": message
+                "additionalContext": claude_msg
             }
         }
         if block:
@@ -84,23 +105,21 @@ class RuleEngine:
 
         # If any blocking rules matched, block the operation
         if blocking_rules:
-            messages = [f"**[{r.name}]**\n{r.message}" for r in blocking_rules]
-            combined_message = "\n\n".join(messages)
+            user_msg, claude_msg = self._get_messages(blocking_rules)
 
             # Use appropriate blocking format based on event type
             if hook_event == 'Stop':
-                response = self._build_response(combined_message, hook_event, block=True)
+                response = self._build_response(user_msg, claude_msg, hook_event, block=True)
                 response["decision"] = "block"
-                response["reason"] = combined_message
+                response["reason"] = user_msg
                 return response
             else:
-                return self._build_response(combined_message, hook_event, block=True)
+                return self._build_response(user_msg, claude_msg, hook_event, block=True)
 
         # If only warnings, show them but allow operation
         if warning_rules:
-            messages = [f"**[{r.name}]**\n{r.message}" for r in warning_rules]
-            combined_message = "\n\n".join(messages)
-            return self._build_response(combined_message, hook_event)
+            user_msg, claude_msg = self._get_messages(warning_rules)
+            return self._build_response(user_msg, claude_msg, hook_event)
 
         # No matches - allow operation
         return {}

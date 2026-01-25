@@ -40,7 +40,8 @@ class Rule:
     action: str = "warn"  # "warn" or "block"
     hook: Optional[str] = None  # "pre", "post", or None (both)
     tool_matcher: Optional[str] = None  # Override tool matching
-    message: str = ""  # Message body from markdown
+    message: str = ""  # Message body from markdown (Claude-facing by default)
+    message_user: Optional[str] = None  # Optional user-facing message (systemMessage)
 
     @classmethod
     def from_dict(cls, frontmatter: Dict[str, Any], message: str) -> 'Rule':
@@ -89,7 +90,8 @@ class Rule:
             action=frontmatter.get('action', 'warn'),
             hook=hook_value,
             tool_matcher=frontmatter.get('tool_matcher'),
-            message=message.strip()
+            message=message.strip(),
+            message_user=frontmatter.get('message_user'),
         )
 
 
