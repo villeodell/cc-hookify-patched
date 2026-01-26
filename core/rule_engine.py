@@ -134,6 +134,10 @@ class RuleEngine:
         Returns:
             True if rule matches, False otherwise
         """
+        # Skip disabled rules (defense in depth - typically pre-filtered by loader)
+        if not rule.enabled:
+            return False
+
         # Check hook phase filter (pre/post)
         if rule.hook:
             hook_event = input_data.get('hook_event_name', '')
