@@ -1,6 +1,20 @@
-# Hookify Plugin
+# Hookify Plugin (Patched)
 
-Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions.
+Patched fork of the [official hookify plugin](https://github.com/anthropics/claude-plugins-official/tree/main/hookify) with bug fixes and enhancements.
+
+## What's Different
+
+**Bug fixes:**
+- Claude can now see hook messages via `additionalContext` ([upstream issue #282](https://github.com/anthropics/claude-plugins-official/issues/282))
+- Disabled rules are checked in rule engine (defense in depth)
+
+**Enhancements:**
+- `hook: pre/post` field to target only PreToolUse or PostToolUse
+- `message_user` field for separate user-facing alerts (body goes to Claude)
+
+See commit history for details. These changes may be submitted upstream via [issue #282](https://github.com/anthropics/claude-plugins-official/issues/282).
+
+---
 
 ## Overview
 
@@ -320,12 +334,13 @@ rm .claude/hookify.my-rule.local.md
 
 ## Installation
 
-This plugin is part of the Claude Code Marketplace. It should be auto-discovered when the marketplace is installed.
-
-**Manual testing:**
+Clone and install via `--plugin-dir`:
 ```bash
-cc --plugin-dir /path/to/hookify
+git clone https://github.com/villeodell/cc-hookify-patched.git
+claude --plugin-dir /path/to/cc-hookify-patched
 ```
+
+For the official (unpatched) version, use the Claude Code Marketplace.
 
 ## Requirements
 

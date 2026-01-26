@@ -1,8 +1,9 @@
 {
-  "name": "hookify",
-  "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
+  "name": "hookify-patched",
+  "description": "Patched fork of hookify with bug fixes and enhancements",
   "author": {
-    "name": "Anthropic",
-    "email": "support@anthropic.com"
-  }
+    "name": "villeodell"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/villeodell/cc-hookify-patched"
 }
