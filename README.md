@@ -14,6 +14,38 @@ Patched fork of the [official hookify plugin](https://github.com/anthropics/clau
 
 See commit history for details. These changes may be submitted upstream via [issue #282](https://github.com/anthropics/claude-plugins-official/issues/282).
 
+## Installation
+
+### From GitHub (recommended)
+
+```
+/plugin marketplace add villeodell/cc-hookify-patched
+/plugin install hookify-patched@cc-hookify-patched
+```
+
+### From a local clone
+
+```bash
+git clone https://github.com/villeodell/cc-hookify-patched.git
+```
+
+```
+/plugin marketplace add /path/to/cc-hookify-patched
+/plugin install hookify-patched@cc-hookify-patched
+```
+
+### Quick (dev/testing)
+
+```bash
+claude --plugin-dir /path/to/cc-hookify-patched
+```
+
+Note: `--plugin-dir` must be specified each time you launch Claude Code.
+
+### Official version
+
+For the official (unpatched) hookify, use the Claude Code Marketplace.
+
 ---
 
 ## Overview
@@ -331,38 +363,6 @@ rm .claude/hookify.my-rule.local.md
 ```
 /hookify:list
 ```
-
-## Installation
-
-### From GitHub (recommended)
-
-```
-/plugin marketplace add villeodell/cc-hookify-patched
-/plugin install hookify-patched@cc-hookify-patched
-```
-
-### From a local clone
-
-```bash
-git clone https://github.com/villeodell/cc-hookify-patched.git
-```
-
-```
-/plugin marketplace add /path/to/cc-hookify-patched
-/plugin install hookify-patched@cc-hookify-patched
-```
-
-### Quick (dev/testing)
-
-```bash
-claude --plugin-dir /path/to/cc-hookify-patched
-```
-
-Note: `--plugin-dir` must be specified each time you launch Claude Code.
-
-### Official version
-
-For the official (unpatched) hookify, use the Claude Code Marketplace.
 
 ## Requirements
 
