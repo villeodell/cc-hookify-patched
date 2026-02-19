@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cc-hookify-patched",
+  "version": "1.0.0",
+  "description": "Patched fork of hookify with additionalContext fix and enhancements for Claude Code",
+  "owner": {
+    "name": "villeodell"
+  },
+  "plugins": [
+    {
+      "name": "hookify-patched",
+      "description": "Patched hookify - Claude can now see hook messages via additionalContext",
+      "source": "./"
+    }
+  ]
+}

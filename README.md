@@ -334,52 +334,31 @@ rm .claude/hookify.my-rule.local.md
 
 ## Installation
 
-### Quick (dev/testing)
+### From GitHub (recommended)
+
+```
+/plugin marketplace add villeodell/cc-hookify-patched
+/plugin install hookify-patched@cc-hookify-patched
+```
+
+### From a local clone
 
 ```bash
 git clone https://github.com/villeodell/cc-hookify-patched.git
+```
+
+```
+/plugin marketplace add /path/to/cc-hookify-patched
+/plugin install hookify-patched@cc-hookify-patched
+```
+
+### Quick (dev/testing)
+
+```bash
 claude --plugin-dir /path/to/cc-hookify-patched
 ```
 
 Note: `--plugin-dir` must be specified each time you launch Claude Code.
-
-### Persistent (local marketplace)
-
-For persistent installation, create a local marketplace:
-
-```bash
-# Create marketplace structure
-mkdir -p ~/workspace/cc-local-plugins/{plugins,.claude-plugin}
-
-# Symlink the plugin to avoid duplicating code (or copy if preferred)
-ln -s /path/to/cc-hookify-patched ~/workspace/cc-local-plugins/plugins/hookify-patched
-
-# Create marketplace.json
-cat > ~/workspace/cc-local-plugins/.claude-plugin/marketplace.json << 'EOF'
-{
-  "name": "local",
-  "description": "Local plugin marketplace",
-  "owner": { "name": "your-name" },
-  "plugins": [
-    {
-      "name": "hookify-patched",
-      "description": "Patched hookify with bug fixes and enhancements",
-      "source": "./plugins/hookify-patched",
-      "category": "development"
-    }
-  ]
-}
-EOF
-
-# Initialize as git repo (required for relative paths)
-cd ~/workspace/cc-local-plugins && git init && git add -A && git commit -m "initial"
-```
-
-Then in Claude Code:
-```
-/plugin marketplace add ~/workspace/cc-local-plugins
-/plugin install hookify-patched@local
-```
 
 ### Official version
 
